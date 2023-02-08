@@ -1,0 +1,64 @@
+- name: Install OpenVPN on CentOS 7
+  hosts: openvpn
+  become: yes
+  
+  tasks:
+    - name: Install OpenVPN and Easy-RSA
+      yum:
+        name:
+          - openvpn
+          - easy-rsa
+        state: present
+
+    - name: Copy Easy-RSA scripts
+      copy:
+        src: /usr/share/easy-rsa/3.0.3/
+        dest: /etc/openvpn/easy-rsa/
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Copy sample OpenVPN configuration
+      copy:
+        src: /usr/share/doc/openvpn-2.4.7/sample/sample-config-files/server.conf
+        dest: /etc/openvpn/
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - restart openvpn
+
+    - name: Generate OpenVPN certificate and key
+      shell: |
+        source /etc/openvpn/easy-rsa/vars
+        /etc/openvpn/easy-rsa/easyrsa init-pki
+        /etc/openvpn/easy-rsa/easyrsa build-ca
+        /etc/openvpn/easy-rsa/easyrsa build-server-full server nopass
+      args:
+        creates: /etc/openvpn/easy-rsa/pki/issued/server.crt
+      
+    - name: Configure firewall
+      firewalld:
+        zone: public
+        port: 1194/udp
+        permanent: yes
+        state: enabled
+      notify:
+        - restart firewalld
+
+    - name: Start and enable OpenVPN
+      service:
+        name: openvpn
+        state: started
+        enabled: yes
+
+  handlers:
+    - name: restart openvpn
+      service:
+        name: openvpn
+        state: restarted
+
+    - name: restart firewalld
+      service:
+        name: firewalld
+        state: restarted
