@@ -20,3 +20,17 @@ results = mycursor.fetchall()
 # Print the results
 for row in results:
   print(row)
+
+
+
+# mssql
+
+import pyodbc
+
+server = 'your_server_name'
+database = 'your_database_name'
+username = 'your_username'
+password = 'your_password'
+conn = pyodbc.connect('DRIVER={SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+password)
+
+cursor = conn.cursor()
