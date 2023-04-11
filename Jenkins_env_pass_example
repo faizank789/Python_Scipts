@@ -1,0 +1,30 @@
+# environment.env  Create this file
+
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=mydatabase
+DB_USER=myusername
+DB_PASSWORD=mypassword
+
+# pipeline example
+
+pipeline {
+    agent any
+    environment {
+        envFile = readFile('environment.env')
+    }
+    stages {
+        stage('Example') {
+            steps {
+                withEnv(envFile) {
+                    sh 'echo $DB_HOST'
+                    sh 'echo $DB_PORT'
+                    sh 'echo $DB_NAME'
+                    sh 'echo $DB_USER'
+                    sh 'echo $DB_PASSWORD'
+                }
+            }
+        }
+    }
+}
+
