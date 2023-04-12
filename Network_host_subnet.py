@@ -14,3 +14,8 @@ hosts = int(input("Enter number of hosts required: "))
 network = input("Enter network address (e.g. 192.168.0.0): ")
 cidr = cidr_from_hosts(hosts, network)
 print("CIDR notation:", cidr)
+
+#run
+#Enter number of hosts required: 25
+#Enter network address (e.g. 192.168.0.0): 10.0.0.0
+#Output: CIDR notation: 10.0.0.0/27
